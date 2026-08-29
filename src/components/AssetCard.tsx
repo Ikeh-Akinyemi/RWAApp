@@ -1,10 +1,11 @@
-import { Check } from 'lucide-react';
+import { Check, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Asset } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { Badge } from './ui/Badge';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import { useWatchlistStore } from '@/store/watchlistStore';
 
 interface AssetCardProps {
   asset: Asset;
@@ -13,7 +14,9 @@ interface AssetCardProps {
 }
 
 export const AssetCard = ({ asset, onQuickView, onBuyClick }: AssetCardProps) => {
-  const { title, category, price, imageUrl, isVerified, listingType, auctionEndTime } = asset;
+  const { id, title, category, price, imageUrl, isVerified, listingType, auctionEndTime } = asset;
+  const isFavorite = useWatchlistStore((state) => state.isFavorite(id));
+  const toggleFavorite = useWatchlistStore((state) => state.toggleFavorite);
 
   const getActionButton = () => {
     switch (listingType) {
@@ -45,6 +48,21 @@ export const AssetCard = ({ asset, onQuickView, onBuyClick }: AssetCardProps) =>
               <Check size={16} />
             </div>
           )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(id);
+            }}
+            aria-label={isFavorite ? 'Remove from watchlist' : 'Add to watchlist'}
+            aria-pressed={isFavorite}
+            className="absolute top-2 left-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white transition-colors"
+          >
+            <Heart
+              size={16}
+              className={isFavorite ? 'fill-error-500 text-error-500' : 'text-neutral-600'}
+            />
+          </button>
           <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
             <Badge 
               variant={listingType === 'auction' ? 'primary' : 

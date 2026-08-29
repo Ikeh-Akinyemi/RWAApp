@@ -8,10 +8,13 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Only Vite's dev proxy sits in front of this server, so trust exactly one hop.
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || true, // reflect request origin in dev (e.g. Codespaces forwarded URLs)
   credentials: true
 }));
 
@@ -36,6 +39,7 @@ app.use('/api/validators', require('./routes/validators'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
 app.use('/api/ipfs', require('./routes/ipfs'));
 
 // Health check endpoint

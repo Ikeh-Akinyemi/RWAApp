@@ -1,7 +1,5 @@
 const slowDown = require('express-slow-down');
 const rateLimit = require('express-rate-limit');
-const getLogger = require('gloggo');
-var logger = getLogger('Log');
 
 // General rate limiter
 const generalLimiter = rateLimit({
